@@ -1,0 +1,4 @@
+pandas
+requests
+alpha_vantage
+google-cloud-storage

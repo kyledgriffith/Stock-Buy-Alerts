@@ -1,9 +1,7 @@
 import requests
 import pandas as pd
 import os
-import time
 from datetime import datetime, timedelta
-from flask import Flask
 from google.cloud import storage
 
 # Alpha Vantage API settings
@@ -84,16 +82,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-# Keep the script running so Cloud Run does not shut it down
-while True:
-    time.sleep(3600)  # Keep the container alive, sleeping for 1 hour at a time
-
-app = Flask(__name__)
-
-@app.route('/')
-def home():
-    return "Stock Data Fetching Service is Running"
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8080)

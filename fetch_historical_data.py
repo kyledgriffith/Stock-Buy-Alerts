@@ -2,6 +2,7 @@ import requests
 import pandas as pd
 import os
 from datetime import datetime, timedelta
+from flask import Flask
 
 # Alpha Vantage API settings
 API_KEY = "84G51LOMCWHULE86"
@@ -55,10 +56,27 @@ def save_data(df, symbol):
     print(f"Data saved for {symbol} in {file_path}")
 
 def main():
+    """Fetch and save stock data for all symbols."""
     for symbol in STOCK_SYMBOLS:
         df = fetch_stock_data(symbol)
         if df is not None:
             save_data(df, symbol)
 
-if __name__ == "__main__":
+# Create Flask app to keep Cloud Run service running
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return "Stock Data Fetching Service is Running"
+
+@app.route('/run-fetch')
+def run_fetch():
+    """Trigger fetching stock data manually via a URL."""
     main()
+    return "Stock data fetched successfully!"
+
+if __name__ == '__main__':
+    # Run main() once at startup
+    main()
+    # Start Flask server to keep the container alive
+    app.run(host='0.0.0.0', port=8080)

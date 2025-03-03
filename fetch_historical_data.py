@@ -4,15 +4,19 @@ import os
 import time
 from datetime import datetime, timedelta
 from flask import Flask
+from google.cloud import storage
 
 # Alpha Vantage API settings
 API_KEY = "84G51LOMCWHULE86"
 BASE_URL = "https://www.alphavantage.co/query"
 STOCK_SYMBOLS = ["SMCX", "IVVD", "DPST", "SPXL"]  # Update this list with desired stock symbols
-DATA_DIR = "historical_data"  # Folder to store CSV files
+BUCKET_NAME = "stock-buy-alert-data"  # Google Cloud Storage bucket name
 MARKET_OPEN = 9 * 60 + 30  # 9:30 AM in minutes
 MARKET_CLOSE = 16 * 60  # 4:00 PM in minutes
 
+# Initialize Google Cloud Storage client
+storage_client = storage.Client()
+bucket = storage_client.bucket(BUCKET_NAME)
 
 def fetch_stock_data(symbol):
     """Fetch minute-level historical data for the last 30 days from Alpha Vantage."""
@@ -48,30 +52,35 @@ def fetch_stock_data(symbol):
     df["symbol"] = symbol
     return df
 
-
 def save_data(df, symbol):
-    """Save data to CSV while keeping only the last 365 days of records."""
-    os.makedirs(DATA_DIR, exist_ok=True)
-    file_path = os.path.join(DATA_DIR, f"{symbol}.csv")
+    """Save data to Google Cloud Storage while keeping only the last 365 days of records."""
+    file_name = f"{symbol}.csv"
+    local_file_path = f"/tmp/{file_name}"  # Temporary storage
     
-    if os.path.exists(file_path):
-        existing_df = pd.read_csv(file_path, parse_dates=["index"], index_col="index")
+    # Check if file exists in GCS and load existing data
+    blob = bucket.blob(file_name)
+    if blob.exists():
+        blob.download_to_filename(local_file_path)
+        existing_df = pd.read_csv(local_file_path, parse_dates=["index"], index_col="index")
         df = pd.concat([existing_df, df])
         df = df[~df.index.duplicated(keep='last')]  # Remove duplicate timestamps
     
+    # Filter to keep only the last 365 days
     cutoff_date = datetime.now() - timedelta(days=365)
     df = df[df.index >= cutoff_date]
     
-    df.to_csv(file_path, index=True)
-    print(f"Data saved for {symbol} in {file_path}")
-
+    # Save to local temp file
+    df.to_csv(local_file_path, index=True)
+    
+    # Upload to GCS
+    blob.upload_from_filename(local_file_path)
+    print(f"Data saved for {symbol} in Google Cloud Storage bucket: {BUCKET_NAME}")
 
 def main():
     for symbol in STOCK_SYMBOLS:
         df = fetch_stock_data(symbol)
         if df is not None:
             save_data(df, symbol)
-
 
 if __name__ == "__main__":
     main()
@@ -82,11 +91,9 @@ while True:
 
 app = Flask(__name__)
 
-
 @app.route('/')
 def home():
     return "Stock Data Fetching Service is Running"
-
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)

@@ -1,4 +1,6 @@
 pandas
 requests
+flask
+gunicorn
 alpha_vantage
 google-cloud-storage

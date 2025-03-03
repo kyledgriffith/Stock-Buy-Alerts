@@ -1,18 +1,17 @@
-# Use an official Python runtime
+# Use an official Python runtime as a parent image
 FROM python:3.9
 
-# Set working directory
+# Set the working directory in the container
 WORKDIR /app
 
-# Copy files
-COPY . .
+# Copy the current directory contents into the container at /app
+COPY . /app
 
-# Install dependencies
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
+# Install required Python packages
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Expose port 8080
+# Expose the port Flask runs on
 EXPOSE 8080
 
-# Run the script
-CMD ["python", "fetch_historical_data.py"]
+# Command to run the application
+CMD ["gunicorn", "-b", "0.0.0.0:8080", "fetch_historical_data:app"]

@@ -1,6 +1,7 @@
 import requests
 import pandas as pd
 import os
+import time
 from datetime import datetime, timedelta
 from flask import Flask
 
@@ -55,28 +56,20 @@ def save_data(df, symbol):
     df.to_csv(file_path, index=True)
     print(f"Data saved for {symbol} in {file_path}")
 
-def main():
-    """Fetch and save stock data for all symbols."""
-    for symbol in STOCK_SYMBOLS:
-        df = fetch_stock_data(symbol)
-        if df is not None:
-            save_data(df, symbol)
-
-# Create Flask app to keep Cloud Run service running
 app = Flask(__name__)
 
 @app.route('/')
 def home():
     return "Stock Data Fetching Service is Running"
 
-@app.route('/run-fetch')
-def run_fetch():
-    """Trigger fetching stock data manually via a URL."""
-    main()
-    return "Stock data fetched successfully!"
+@app.route('/fetch')
+def fetch_data():
+    """Endpoint to manually trigger the data fetch."""
+    for symbol in STOCK_SYMBOLS:
+        df = fetch_stock_data(symbol)
+        if df is not None:
+            save_data(df, symbol)
+    return "Data fetch completed!"
 
 if __name__ == '__main__':
-    # Run main() once at startup
-    main()
-    # Start Flask server to keep the container alive
-    app.run(host='0.0.0.0', port=8080)
+    app.run(host='0.0.0.0', port=8080)  # Ensure Flask listens on the required port

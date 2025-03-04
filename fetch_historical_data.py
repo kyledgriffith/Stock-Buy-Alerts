@@ -59,7 +59,19 @@ def save_data(df, symbol):
     blob = bucket.blob(file_name)
     if blob.exists():
         blob.download_to_filename(local_file_path)
-        existing_df = pd.read_csv(local_file_path, parse_dates=["index"], index_col="index")
+        
+        # Read existing data while handling index issues
+        existing_df = pd.read_csv(local_file_path)
+        
+        # Ensure the index is set properly
+        if "index" in existing_df.columns:
+            existing_df["index"] = pd.to_datetime(existing_df["index"])
+            existing_df.set_index("index", inplace=True)
+        elif existing_df.shape[0] > 0:  # If not empty, assume the first column is the index
+            existing_df.set_index(existing_df.columns[0], inplace=True)
+            existing_df.index = pd.to_datetime(existing_df.index)
+        
+        # Merge existing and new data
         df = pd.concat([existing_df, df])
         df = df[~df.index.duplicated(keep='last')]  # Remove duplicate timestamps
     

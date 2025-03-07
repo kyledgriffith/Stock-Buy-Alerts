@@ -9,7 +9,7 @@ API_KEY = "84G51LOMCWHULE86"
 BASE_URL = "https://www.alphavantage.co/query"
 STOCK_SYMBOLS = ["SMCX", "IVVD", "DPST", "SPXL"]  # Update this list with desired stock symbols
 BUCKET_NAME = "stock-buy-alert-data"  # Google Cloud Storage bucket name
-MARKET_OPEN = 9 * 60 + 30  # 9:30 AM in minutes
+MARKET_OPEN = 8 * 60  # 8:00 AM in minutes
 MARKET_CLOSE = 16 * 60  # 4:00 PM in minutes
 
 # Initialize Google Cloud Storage client
@@ -43,7 +43,7 @@ def fetch_stock_data(symbol):
     df.index = pd.to_datetime(df.index)
     df.sort_index(inplace=True)
     
-    # Filter data to only include market hours (9:30 AM - 4:00 PM EST)
+    # Filter data to only include market hours (8:00 AM - 4:00 PM EST)
     df = df[(df.index.hour * 60 + df.index.minute >= MARKET_OPEN) & 
             (df.index.hour * 60 + df.index.minute <= MARKET_CLOSE)]
     

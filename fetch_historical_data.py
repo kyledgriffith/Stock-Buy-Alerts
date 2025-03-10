@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from google.cloud import storage
 
 # Alpha Vantage API settings
-API_KEY = "84G51LOMCWHULE86"
+API_KEY = "DmP_78xmQB7Ckt5mEFZ5ogIi_EdjWQzV"
 BASE_URL = "https://www.alphavantage.co/query"
 STOCK_SYMBOLS = ["SMCX", "IVVD", "DPST", "SPXL", "S&P 500"]  # Update this list with desired stock symbols
 BUCKET_NAME = "stock-buy-alert-data"  # Google Cloud Storage bucket name

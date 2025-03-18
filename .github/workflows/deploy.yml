@@ -29,8 +29,4 @@ jobs:
 
     - name: Deploy to Cloud Run
       run: |
-        gcloud run deploy stock-buy-alert \
-          --image gcr.io/stock-buy-alert/stock-buy-alert \
-          --region us-central1 \
-          --platform managed \
-          --allow-unauthenticated
+        gcloud run deploy stock-buy-alert --image gcr.io/stock-buy-alert/stock-buy-alert --region us-central1 --platform managed --allow-unauthenticated

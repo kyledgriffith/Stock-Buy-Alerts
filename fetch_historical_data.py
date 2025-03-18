@@ -84,7 +84,7 @@ def save_data(df, symbol):
     
     # Upload to GCS
     blob.upload_from_filename(local_file_path)
-    print(f"Data saved for {symbol} in Google Cloud Storage, bucket: {BUCKET_NAME}")
+    print(f"Data saved for {symbol} in Google Cloud Storage bucket: {BUCKET_NAME}")
 
 def main():
     for symbol in STOCK_SYMBOLS:

@@ -7,7 +7,7 @@ from google.cloud import storage
 # Alpha Vantage API settings
 API_KEY = "DmP_78xmQB7Ckt5mEFZ5ogIi_EdjWQzV"
 BASE_URL = "https://www.alphavantage.co/query"
-STOCK_SYMBOLS = ["SMCX", "IVVD", "DPST", "SPXL", "TSLA"]  # Added Tesla
+STOCK_SYMBOLS = ["SMCX", "IVVD", "DPST", "SPXL", "TSLA"]  # Added Tesla Symbol
 BUCKET_NAME = "stock-buy-alert-data"  # Google Cloud Storage bucket name
 MARKET_OPEN = 8 * 60  # 8:00 AM in minutes - Useful for before-hours trending
 MARKET_CLOSE = 16 * 60  # 4:00 PM in minutes

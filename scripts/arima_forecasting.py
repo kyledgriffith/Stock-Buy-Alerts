@@ -21,10 +21,10 @@ def train_arima(df, stock_name):
     """Train ARIMA model and forecast"""
     df.set_index('Datetime', inplace=True)
     df = df.asfreq('T')  # Ensure minute-by-minute frequency
-    df['Close'] = df['Close'].fillna(method='ffill')  # Fill missing values
+    df['close'] = df['close'].fillna(method='ffill')  # Fill missing values
     
     # Make stationary
-    stationary_series = make_stationary(df['Close'])
+    stationary_series = make_stationary(df['close'])
     
     # Fit ARIMA Model (p=1, d=1, q=1 as a starting point)
     model = ARIMA(stationary_series, order=(1, 1, 1))

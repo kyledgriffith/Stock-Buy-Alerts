@@ -10,6 +10,10 @@ __pycache__/
 # Ignore VS Code settings
 .vscode/
 
+# Ignore CSV Data files
+data/
+processed_data/
+
 # Ignore environment variables and credentials
 .env
 
